@@ -1,0 +1,16 @@
+{
+  "name": "channelmonitorapp",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "discordx": "^11.9.2"
+  }
+}
