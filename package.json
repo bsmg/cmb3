@@ -1,16 +1,27 @@
 {
   "name": "channelmonitorapp",
-  "module": "src/index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "version": "1.0.0",
+  "description": "# Setup",
+  "main": "lib/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bsmg/cmb3.git"
   },
+  "author": "",
   "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/bsmg/cmb3/issues"
+  },
+  "homepage": "https://github.com/bsmg/cmb3#readme",
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "discordx": "^11.9.2"
+    "@types/node": "^20.12.7",
+    "discord.js": "^14.14.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
   }
 }

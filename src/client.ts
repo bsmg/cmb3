@@ -1,7 +1,6 @@
-import { GatewayIntentBits, Partials } from "discord.js";
-import { Client } from "discordx";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 
-export const client: Client = new Client({
+export const client = new Client({
     intents: [
         GatewayIntentBits.MessageContent
     ],
