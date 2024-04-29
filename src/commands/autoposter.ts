@@ -1,4 +1,4 @@
-import { CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import { CacheType, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 
 // TODO: Replace with DB
 import { readFileSync, writeFileSync } from "fs";
@@ -51,7 +51,7 @@ export const command = new SlashCommandBuilder()
     ) // List all autoposters
 // TODO: add extra subcommands as found here: https://docs.google.com/document/d/1JlltQ0Gms1gRDwS3MWq8IywrRt5m0BaWtvnEuD0ZM7s/edit#heading=h.qk36rrk2q6ga
 
-export async function execute(interaction: CommandInteraction) { // Need to figure out why interaction.reply here causes an undefined error, as opposed to file://./ping.ts
+export async function execute(interaction: CommandInteraction<CacheType>) { // Need to figure out why interaction.reply here causes an undefined error, as opposed to file://./ping.ts
     switch ((interaction.options as CommandInteractionOptionResolver).getSubcommand())
     {
         case "add":
@@ -73,27 +73,27 @@ export async function execute(interaction: CommandInteraction) { // Need to figu
 }
 
 // TODO: define functions with json data temporarily until databasing available
-async function add(interaction: CommandInteraction)
+async function add(interaction: CommandInteraction<CacheType>)
 {
-    
+    interaction.reply("Add");
 }
 
-async function kill(interaction: CommandInteraction)
+async function kill(interaction: CommandInteraction<CacheType>)
 {
-    
+    interaction.reply("Kill");
 }
 
-async function enable(interaction: CommandInteraction)
+async function enable(interaction: CommandInteraction<CacheType>)
 {
-
+    interaction.reply("Enable");
 }
 
-async function disable(interaction: CommandInteraction)
+async function disable(interaction: CommandInteraction<CacheType>)
 {
-    
+    interaction.reply("Disable");
 }
 
-async function list(interaction: CommandInteraction)
+async function list(interaction: CommandInteraction<CacheType>)
 {
-
+    interaction.reply("List");
 }

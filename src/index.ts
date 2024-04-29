@@ -19,7 +19,7 @@ client.on("interactionCreate", async (interaction) => {
     if (!command)
         throw new Error("Command not found for: " + interaction.commandName);
 
-    await command();
+    await command(interaction);
 });
 
 client.login(Configuration.config.token);
