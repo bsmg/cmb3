@@ -1,6 +1,6 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 
-export const client = new Client({
+export const client: Client = new Client({
     intents: [
         GatewayIntentBits.MessageContent
     ],
@@ -8,3 +8,5 @@ export const client = new Client({
         Partials.Message
     ]
 })
+
+export const commands: Collection<string, Function> = new Collection();
