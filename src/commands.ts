@@ -8,6 +8,8 @@ import { Routes } from "discord.js";
 
 export async function registerCommands()
 {
+	clientCommands.clear();
+	
 	const rest = new REST().setToken(Configuration.config.token);
 
 	const commandFiles = readdirSync(join(__dirname, "commands")).filter(f => f.endsWith(".ts"));
