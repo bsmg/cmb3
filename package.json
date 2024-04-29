@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc"
+    "start": "ts-node src/index.ts",
+    "start:dev": "ts-node-dev src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -18,10 +19,13 @@
   },
   "homepage": "https://github.com/bsmg/cmb3#readme",
   "dependencies": {
-    "@types/node": "^20.12.7",
+    "@discordjs/rest": "^2.2.0",
     "discord.js": "^14.14.1"
   },
   "devDependencies": {
+    "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
   }
 }
