@@ -6,13 +6,15 @@ export class Configuration
     private static readonly defaultConfig = {
         token: "App token",
         spamChannel: "Spam channel ID",
-        clientId: "Client ID"
+        clientId: "Client ID",
+        guildId: "Guild ID",
     }
 
     public static config = {
         token: "",
         spamChannel: "",
-        clientId: ""
+        clientId: "",
+        guildId: ""
     }
 
     public static Init()
@@ -36,5 +38,7 @@ export class Configuration
             throw new Error("Config value `spamChannel` is not of type `string`")
         if (typeof Configuration.config.clientId !== "string")
             throw new Error("Config value `clientId` is not of type `string`");
+        if (typeof Configuration.config.guildId !== "string")
+            throw new Error("Config value `guildId` is not of type `string`");
     }    
 }
