@@ -97,3 +97,5 @@ async function list(interaction: CommandInteraction<CacheType>)
 {
     interaction.reply("List");
 }
+
+// TODO: add extra subcommands as found here: https://docs.google.com/document/d/1JlltQ0Gms1gRDwS3MWq8IywrRt5m0BaWtvnEuD0ZM7s/edit#heading=h.qk36rrk2q6ga
