@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": [
+    "@luludev/eslint-config/common",
+    "@luludev/eslint-config/node",
+    "@luludev/eslint-config/typescript",
+    "@luludev/eslint-config/prettier",
+    "@luludev/eslint-config/no-deprecated"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  }
+}

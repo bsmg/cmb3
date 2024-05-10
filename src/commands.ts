@@ -1,37 +1,42 @@
-import { commands as clientCommands } from "./client";
-
+import { readdir, stat } from "node:fs/promises";
+import { join } from "node:path";
 import { REST } from "@discordjs/rest";
-import { readdirSync, statSync } from "fs";
-import { join } from "path";
-import { Configuration } from "./config";
 import { Routes } from "discord.js";
+import { commands as clientCommands } from "./client";
+import { Configuration } from "./config";
 
-export async function registerCommands()
-{
-	clientCommands.clear();
-	
-	const rest = new REST().setToken(Configuration.config.token);
+export async function registerCommands() {
+  clientCommands.clear();
 
-	const commandDirs = join(__dirname, "commands");
-	const categoryDirs = readdirSync(commandDirs).filter(x => statSync(join(commandDirs, x)).isDirectory());
-	const commands = [];
+  const rest = new REST().setToken(Configuration.config.token);
 
-	for (const category of categoryDirs)
-	{
-		const files = readdirSync(join(commandDirs, category)).filter(x => x.endsWith(".ts"));
+  const commandDir = join(__dirname, "commands");
 
-		for (const file of files)
-		{
-			const { command, execute } = require(`./commands/${category}/${file}`);
+  const categoryDirsUnfiltered = await readdir(commandDir);
+  const categoryDirs = categoryDirsUnfiltered.filter(async (x) => {
+    const category = (await stat(join(commandDir, x)));
+    return category.isDirectory();
+  });
 
-			// https://discord.com/developers/applications/{botid}/bot
-			if (category === "admin")
-				command.setDefaultMemberPermissions(16); // Manage Channels
+  const commands = [];
 
-			commands.push(command);
-			clientCommands.set(command.name, execute);
-		}
-	}
-	
-	await rest.put(Routes.applicationCommands(Configuration.config.clientId), { body: commands });
+  categoryDirs.map(async (category): Promise<void> => {
+    const filesUnfiltered = await readdir(join(commandDir, category));
+    const files = filesUnfiltered.filter(x => x.endsWith(".ts"));
+  })
+
+  const [commandFiles] = await Promise.all(
+    categoryDirs.map(async (category) => {
+      const filesUnfiltered = await readdir(join(commandDirs, category));
+      return filesUnfiltered.filter(x => x.endsWith(".ts"));
+    })
+  );
+
+  for (const category of categoryDirs) {
+    const files = await readdir(join(commandDirs, category));
+  }
+
+  await rest.put(Routes.applicationCommands(Configuration.config.clientId), {
+    body: commands,
+  });
 }

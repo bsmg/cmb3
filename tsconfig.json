@@ -1,33 +1,44 @@
 {
-	"compilerOptions": {
-		"target": "ES2020",
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"lib": [
-			"es2020",
-		],
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // Type Checking
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "useUnknownInCatchVariables": true,
+    "noUncheckedIndexedAccess": false,
+    "skipLibCheck": true,
 
-		"rootDirs": [ 
-			"./src"
-		],
-		"outDir": "lib",
+    // Modules
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
 
-		"strict": false,
-		"alwaysStrict": false,
-		"strictFunctionTypes": false,
-		"strictNullChecks": false,
-		"strictPropertyInitialization": false,
+    // Emit
+    "declaration": false,
+    "declarationMap": false,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "inlineSources": true,
+    "newLine": "lf",
+    "outDir": "build",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
 
-		"esModuleInterop": true,
-
-		"forceConsistentCasingInFileNames": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": false,
-		"noUnusedParameters": false,
-
-		"pretty": true
-	}
+    // Language and Environment
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["ESNext"],
+    "target": "ES2021",
+    "useDefineForClassFields": true
+  }
 }

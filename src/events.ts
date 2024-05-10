@@ -1,20 +1,20 @@
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
 import { client } from "./client";
 
-import { readdirSync } from "fs";
-import { join } from "path";
+export async function registerEvents() {
+  const eventsDir = join(__dirname, "events");
 
+  const eventFilesUnfiltered = await readdir(eventsDir);
+  const eventFiles = eventFilesUnfiltered.filter((x) => x.endsWith(".ts"));
 
-export function registerEvents()
-{
-    const eventsDir = join(__dirname, "events");
-
-    const eventFiles = readdirSync(eventsDir).filter(x => x.endsWith(".ts"));
-
-    for (const eventFile of eventFiles)
-    {
-        const { event } = require(`./events/${eventFile}`);
+  await Promise.all(
+    eventFiles.map(async (eventFile) => {
+      const { event } = await import(`./events/${eventFile}`).catch(() => {});
+      if (event) {
         client.on(eventFile.replace(".ts", ""), event);
-
-        console.log(`Attached event to ${eventFile}`)
-    }
+        console.log(`Attached event to ${eventFile}`);
+      }
+    })
+  );
 }

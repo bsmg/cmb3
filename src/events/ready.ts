@@ -1,5 +1,5 @@
-import { Client } from "discord.js";
+import type { Client } from "discord.js";
 
 export const event = (client: Client<true>) => {
-    console.log(`Logged into ${client.user.username} (${client.user.id})`);
-}
+  console.log(`Logged into ${client.user.username} (${client.user.id})`);
+};

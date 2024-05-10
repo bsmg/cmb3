@@ -1,11 +1,12 @@
-import { Configuration } from "./config";
-import { client, commands } from "./client";
+import { client } from "./client";
 import { registerCommands } from "./commands";
+import { Configuration } from "./config";
 import { registerEvents } from "./events";
 
-Configuration.Init();
+(async () => {
+  Configuration.Init();
+  await registerCommands();
+  registerEvents();
 
-registerCommands();
-registerEvents();
-
-client.login(Configuration.config.token);
+  await client.login(Configuration.config.token);
+})();

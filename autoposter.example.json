@@ -1,12 +1,12 @@
 {
-    "autoposters": [
-        {
-            "name": "test",
-            "content": "!embed !title Testing !description The mods are now modding for a version !color 00ff00",
-            "channelId": "123456789",
-            "deletePrevious": true,
-            "interval": 10,
-            "minMessageCount": 10
-        }
-    ]
+  "autoposters": [
+    {
+      "name": "test",
+      "content": "!embed !title Testing !description The mods are now modding for a version !color 00ff00",
+      "channelId": "123456789",
+      "deletePrevious": true,
+      "interval": 10,
+      "minMessageCount": 10
+    }
+  ]
 }

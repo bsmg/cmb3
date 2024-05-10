@@ -6,7 +6,13 @@
   "type": "commonjs",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start:dev": "ts-node-dev src/index.ts"
+    "start:dev": "ts-node-dev src/index.ts",
+    "lint": "prettier --check . && eslint src --ext ts",
+    "format": "prettier --write . && eslint src --ext ts --fix",
+    "fmt": "npm run format",
+    "check": "tsc --noEmit --skipLibCheck",
+    "test": "npm run check && npm run lint",
+    "fix": "eslint --fix --ext .ts ."
   },
   "repository": {
     "type": "git",
@@ -23,7 +29,10 @@
     "discord.js": "^14.14.1"
   },
   "devDependencies": {
+    "@luludev/eslint-config": "^0.5.4",
     "@types/node": "^20.12.7",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
