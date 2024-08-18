@@ -1,40 +1,36 @@
 {
   "name": "channelmonitorapp",
-  "version": "1.0.0",
-  "description": "# Setup",
-  "main": "lib/index.js",
-  "type": "commonjs",
+  "version": "3.0.0",
+  "description": "The channel monitoring app for the BSMG Discord server.",
+  "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start:dev": "ts-node-dev src/index.ts",
     "lint": "prettier --check . && eslint src --ext ts",
     "format": "prettier --write . && eslint src --ext ts --fix",
     "fmt": "npm run format",
     "check": "tsc --noEmit --skipLibCheck",
-    "test": "npm run check && npm run lint",
-    "fix": "eslint --fix --ext .ts ."
+    "test": "npm run check && npm run lint"
   },
+  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bsmg/cmb3.git"
   },
-  "author": "",
+  "author": "BSMG",
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/bsmg/cmb3/issues"
   },
   "homepage": "https://github.com/bsmg/cmb3#readme",
-  "dependencies": {
-    "@discordjs/rest": "^2.2.0",
-    "discord.js": "^14.14.1"
-  },
   "devDependencies": {
     "@luludev/eslint-config": "^0.5.4",
-    "@types/node": "^20.12.7",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^1.8.2",
+    "discord.js": "^14.15.3"
   }
 }

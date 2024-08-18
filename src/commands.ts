@@ -1,42 +1,43 @@
-import { readdir, stat } from "node:fs/promises";
-import { join } from "node:path";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord.js";
-import { commands as clientCommands } from "./client";
-import { Configuration } from "./config";
+import { access } from "node:fs/promises";
+import * as path from "node:path";
+import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord-api-types/v10";
+import type { SlashCommandBuilder } from "discord.js";
+import { REST, Routes } from "discord.js";
+import { Configuration } from "./configuration";
 
-export async function registerCommands() {
-  clientCommands.clear();
+export class CommandsManager {
+  private static _instance: CommandsManager;
+  private _commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
+  private readonly _commandsPath = path.join(__dirname, "commands");
 
-  const rest = new REST().setToken(Configuration.config.token);
-
-  const commandDir = join(__dirname, "commands");
-
-  const categoryDirsUnfiltered = await readdir(commandDir);
-  const categoryDirs = categoryDirsUnfiltered.filter(async (x) => {
-    const category = (await stat(join(commandDir, x)));
-    return category.isDirectory();
-  });
-
-  const commands = [];
-
-  categoryDirs.map(async (category): Promise<void> => {
-    const filesUnfiltered = await readdir(join(commandDir, category));
-    const files = filesUnfiltered.filter(x => x.endsWith(".ts"));
-  })
-
-  const [commandFiles] = await Promise.all(
-    categoryDirs.map(async (category) => {
-      const filesUnfiltered = await readdir(join(commandDirs, category));
-      return filesUnfiltered.filter(x => x.endsWith(".ts"));
-    })
-  );
-
-  for (const category of categoryDirs) {
-    const files = await readdir(join(commandDirs, category));
+  public static get instance() {
+    if (!this._instance) this._instance = new CommandsManager();
+    return this._instance;
   }
 
-  await rest.put(Routes.applicationCommands(Configuration.config.clientId), {
-    body: commands,
-  });
+  public registerCommand(command: SlashCommandBuilder) {
+    console.log(`Registering ${command.name}`);
+    this._commands.push(command.toJSON());
+  }
+
+  public async loadCommandsAsync() {
+    this._commands = [];
+
+    try {
+      console.log("Attempting to load commands");
+      await access(this._commandsPath);
+    } catch {}
+  }
+
+  public async refreshCommandsAsync() {
+    console.log("Refreshing all commands!");
+
+    const rest = new REST().setToken(Configuration.instance.token);
+    await rest.put(
+      Routes.applicationCommands(Configuration.instance.clientId),
+      { body: this._commands },
+    );
+
+    console.log("Refreshed all commands");
+  }
 }

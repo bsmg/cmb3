@@ -1,12 +1,11 @@
-import { client } from "./client";
-import { registerCommands } from "./commands";
-import { Configuration } from "./config";
-import { registerEvents } from "./events";
+import { ClientManager } from "./client";
+import { Configuration } from "./configuration";
+import { EventManager } from "./events";
 
 (async () => {
-  Configuration.Init();
-  await registerCommands();
-  registerEvents();
+  await Configuration.setup(); // must run first to load config, spent a good 30 mins trying to figure out why nothing worked :/
 
-  await client.login(Configuration.config.token);
+  await EventManager.instance.setupEventsAsync();
+
+  await ClientManager.instance.client.login(Configuration.instance.token);
 })();
