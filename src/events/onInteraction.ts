@@ -1,7 +1,7 @@
 import type { CacheType, Interaction } from "discord.js";
 import { Events } from "discord.js";
-import { CommandManager } from "../commands";
 import type { IEvent } from "../interfaces/event";
+import { CommandManager } from "../managers/commands";
 
 export default class OnInteraction implements IEvent<Events.InteractionCreate> {
   public readonly eventName = Events.InteractionCreate;

@@ -1,7 +1,7 @@
-import { ClientManager } from "./client";
-import { CommandManager } from "./commands";
 import { Configuration } from "./configuration";
-import { EventManager } from "./events";
+import { ClientManager } from "./managers/client";
+import { CommandManager } from "./managers/commands";
+import { EventManager } from "./managers/events";
 
 (async () => {
   await Configuration.setup(); // must run first to load config, spent a good 30 mins trying to figure out why nothing worked :/

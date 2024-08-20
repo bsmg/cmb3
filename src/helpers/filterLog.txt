@@ -1,0 +1,22 @@
+import { EmbedBuilder } from "@discordjs/builders";
+import { ClientManager } from "../client";
+import { Configuration } from "../configuration";
+
+export function logMessage(content: string, messageId: string, userId: string, channelId: string, trigger: string) {
+    const botChannel = ClientManager.instance.client.channels.cache.get(Configuration.instance.botLogChannel);
+
+    if (!botChannel) {
+        console.log("Failed to get bot logs channel!");
+        return;
+    }
+
+    const embed = new EmbedBuilder()
+        .setTitle("")
+        .addFields(
+            { name: "User", value: `<@${userId}> ${userId}`, inline: false },
+            { name: "Channel", value: `<#${channelId}>`, inline: false },
+            { name: "Message ID", value: `${messageId}`, inline: false },
+            { name: "User", value: `<@${userId}> ${userId}`, inline: false },
+            { name: "User", value: `<@${userId}> ${userId}`, inline: false }
+        )
+}

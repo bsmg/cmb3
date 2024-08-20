@@ -6,6 +6,10 @@ export default class OnMessage implements IEvent<Events.MessageCreate> {
   public readonly eventName = Events.MessageCreate;
 
   public listener(message: Message<boolean>) {
-    console.log(message.content);
+    if (message.author.bot)
+      // eslint-disable-next-line no-useless-return
+      return;
+
+    // console.log(message.content);
   }
 }
