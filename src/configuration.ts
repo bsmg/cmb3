@@ -18,16 +18,21 @@ export class Configuration {
 
   public token = "";
   public clientId = "";
+  public botLogChannel = "";
+  public testId = "";
 
   private static readonly _default = {
     token: "null",
     clientId: "null",
+    botLogChannel: "null",
+    testId: "null"
   };
 
   public static async setup() {
     try {
       console.log("Attempting to access config");
       await fs.access(this._configPath, fs.constants.R_OK | fs.constants.W_OK);
+      console.log("Accessed config, continuing setup");
 
       const configData = await fs.readFile(this._configPath, {
         encoding: "utf8",
@@ -36,6 +41,8 @@ export class Configuration {
 
       this.instance.token = config.token;
       this.instance.clientId = config.clientId;
+      this.instance.botLogChannel = config.bogLogChannel;
+      this.instance.testId = config.testId;
     } catch {
       console.log("Configuration not found. Creating default and exiting app.");
       await fs.writeFile(
