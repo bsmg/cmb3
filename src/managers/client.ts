@@ -12,6 +12,7 @@ export class ClientManager {
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.Guilds,
         GatewayIntentBits.MessageContent,
       ],
       partials: [

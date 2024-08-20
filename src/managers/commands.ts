@@ -1,8 +1,8 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { Collection, REST, Routes } from "discord.js";
-import { Configuration } from "./configuration";
-import type { ICommand } from "./interfaces/command";
+import { Configuration } from "../configuration";
+import type { ICommand } from "../interfaces/command";
 
 export class CommandManager {
   private static _instance: CommandManager;
@@ -10,7 +10,7 @@ export class CommandManager {
     string,
     ICommand
   >();
-  private readonly _commandsPath = path.join(__dirname, "commands");
+  private readonly _commandsPath = path.join(__dirname, "..", "commands");
 
   public static get instance() {
     if (!this._instance) this._instance = new CommandManager();
@@ -33,10 +33,24 @@ export class CommandManager {
       withFileTypes: true,
     });
 
-    files = files.filter((x) => x.isFile() && x.name.endsWith(".ts"));
+    const directoryPromises = files.filter(x => x.isDirectory()).map(async (dir) => {
+      const dirFiles = await fs.readdir(path.join(this._commandsPath, dir.name), { 
+        withFileTypes: true
+      });
+
+      console.log(dir.parentPath);
+
+      files.push(...dirFiles);
+    });
+
+    await Promise.all(directoryPromises);
+
+    files = files.filter(x => x.isFile() && x.name.endsWith(".ts"));
+
+
 
     const commandPromises = files.map(async (file) => {
-      const module = await import(path.join(this._commandsPath, file.name));
+      const module = await import(path.join(file.parentPath, file.name));
 
       if (module.default) {
         const instance = new module.default() as ICommand;

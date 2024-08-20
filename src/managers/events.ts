@@ -1,12 +1,12 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import type { ClientEvents, Message } from "discord.js";
+import type { ClientEvents } from "discord.js";
+import type { IEvent } from "../interfaces/event";
 import { ClientManager } from "./client";
-import type { IEvent } from "./interfaces/event";
 
 export class EventManager {
   private static _instance: EventManager;
-  private readonly _eventsPath = path.join(__dirname, "events");
+  private readonly _eventsPath = path.join(__dirname, "..", "events");
 
   public registerEvent<Event extends keyof ClientEvents>(
     eventName: Event,
@@ -37,9 +37,5 @@ export class EventManager {
     });
 
     await Promise.all(eventPromises);
-  }
-
-  public testEvent(message: Message<boolean>) {
-    console.log(message.content);
   }
 }
