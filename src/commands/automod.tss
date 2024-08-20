@@ -1,0 +1,144 @@
+import type { AutoModerationRule, CacheType, Collection, CommandInteraction, CommandInteractionOptionResolver, TextChannel } from "discord.js";
+import { AutoModerationActionType, AutoModerationRuleEventType /* , AutoModerationRuleKeywordPresetType*/, AutoModerationRuleTriggerType, ChannelType, SlashCommandBuilder } from "discord.js";
+import { ClientManager } from "../client";
+import { Configuration } from "../configuration";
+// import { Constants } from "../constants";
+import type { ICommand } from "../interfaces/command";
+
+
+
+export default class Automod implements ICommand {
+    public readonly builder = new SlashCommandBuilder()
+        .setName("automod")
+        .setDescription("To be completed")
+        .setDMPermission(false)
+        .addSubcommandGroup(subcommandGroup =>
+            subcommandGroup
+                .setName("spam-filter")
+                .setDescription("Filter which kicks user from the server upon activation")
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName("add")
+                        .setDescription("Appends a list of strings")
+                        .addStringOption(option =>
+                            option
+                                .setName("content")
+                                .setDescription("Content to be appended, separated by \"|\"")
+                                .setRequired(true)
+                        )
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName("remove")
+                        .setDescription("Removes a list of strings")
+                        .addStringOption(option =>
+                            option
+                                .setName("content")
+                                .setDescription("Content to be removed, separated by \"|\"")
+                                .setRequired(true)
+                        )
+                )
+        )
+        /* .addSubcommandGroup(subCommandGroup => 
+            subCommandGroup
+                .setName("enable")
+                .setDescription("Enable an automod rule.")
+                .addSubcommand(subCommand => 
+                    subCommand
+                        .setName("flagged-words")
+                        .setDescription("Block innapropriate content.")
+                        .addChannelOption(option => 
+                            option
+                                .setName("channel")
+                                .setDescription("The channel to log to.")
+                                .addChannelTypes(ChannelType.GuildText)
+                                .setRequired(true)
+                        )
+                    )
+                .addSubcommand(subCommand => 
+                    subCommand
+                        .setName("spam-messages")
+                        .setDescription("Blocks messages suspected of spam.")
+                        .addChannelOption(option => 
+                            option
+                                .setName("channel")
+                                .setDescription("The channel to log to.")
+                                .addChannelTypes(ChannelType.GuildText)
+                                .setRequired(true)
+                        )
+                )
+                .addSubcommand(subCommand => 
+                    subCommand
+                        .setName("mention-spam")
+                        .setDescription("Blocks messages suspected of spam.")
+                        .addChannelOption(option => 
+                            option
+                                .setName("channel")
+                                .setDescription("The channel to log to.")
+                                .addChannelTypes(ChannelType.GuildText)
+                                .setRequired(true)
+                        )
+                        .addIntegerOption(option =>
+                            option
+                                .setName("count")
+                                .setDescription("The max count of mentions a user can have in a message.")
+                        )
+                )
+        )
+        .addSubcommandGroup(subCommandGroup => 
+            subCommandGroup
+                .setName("disable")
+                .setDescription("Disable an automod rule.")
+        )*/
+
+
+    public async execute(interaction: CommandInteraction<CacheType>) {
+
+        if (!interaction.guild) {
+            await interaction.reply({  content: "Guild is null!", ephemeral: true });
+            return;
+        }
+
+        const options = interaction.options as CommandInteractionOptionResolver;
+
+        const automod = interaction.guild.autoModerationRules;
+        
+        const rules = await automod.fetch();
+
+        switch (options.getSubcommandGroup()) {
+            case "spam-filter":
+                await this.handleSpamFilter(interaction, rules);
+        }
+
+        const rule = rules.find(x => x.name === "ChannelMonitorBot Message Filter");
+
+        if (rule) {
+            await rule.setKeywordFilter(rule.triggerMetadata.keywordFilter.);
+        }
+        
+
+        await interaction.guild?.autoModerationRules.create({
+            name: "Testing",
+            enabled: true,
+            eventType: AutoModerationRuleEventType.MessageSend,
+            triggerType: AutoModerationRuleTriggerType.Keyword,
+            triggerMetadata: {
+                keywordFilter: filter
+             },
+            actions: [
+                {
+                    type: AutoModerationActionType.BlockMessage,
+                    metadata: {
+                        channel: ClientManager.instance.client.channels.cache.get(Configuration.instance.automodChannel) as TextChannel,
+                        durationSeconds: 10,
+                        customMessage: "This message was automatically deleted"
+                    }
+                }
+            ]
+        }).catch(error => console.log(error));
+    }
+
+    private async handleSpamFilter(interaction: CommandInteraction<CacheType>, rules: Collection<string, AutoModerationRule>) {
+
+    }
+}
