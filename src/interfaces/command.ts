@@ -3,9 +3,13 @@ import type {
   CommandInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
 export interface ICommand {
-  builder: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+  builder:
+    | SlashCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder;
   execute: (interaction: CommandInteraction<CacheType>) => Promise<void>;
 }
