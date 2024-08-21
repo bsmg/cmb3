@@ -24,6 +24,7 @@
   "homepage": "https://github.com/bsmg/cmb3#readme",
   "devDependencies": {
     "@luludev/eslint-config": "^0.5.4",
+    "@types/pg": "^8.11.6",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
     "ts-node": "^10.9.2",
@@ -31,6 +32,8 @@
   },
   "dependencies": {
     "@discordjs/builders": "^1.8.2",
-    "discord.js": "^14.15.3"
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "pg": "^8.12.0"
   }
 }
