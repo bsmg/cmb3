@@ -1,4 +1,4 @@
-import type { CacheType, Interaction } from "discord.js";
+import type { CacheType, GuildMember, Interaction } from "discord.js";
 import { Events } from "discord.js";
 import type { IEvent } from "../interfaces/event";
 import { CommandManager } from "../managers/commands";
@@ -13,6 +13,12 @@ export default class OnInteraction implements IEvent<Events.InteractionCreate> {
     if (!command)
       throw new Error("Command not found for: " + interaction.commandName);
 
-    await command.execute(interaction);
+    const member = interaction.member as GuildMember;
+    await (member.roles.cache.hasAny(...command.roleIds)
+      ? command.execute(interaction)
+      : interaction.reply({
+          content: "You don't have permission to use this command!",
+          ephemeral: true,
+        }));
   }
 }
