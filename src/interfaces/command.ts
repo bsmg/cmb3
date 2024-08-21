@@ -11,5 +11,6 @@ export interface ICommand {
     | SlashCommandBuilder
     | SlashCommandOptionsOnlyBuilder
     | SlashCommandSubcommandsOnlyBuilder;
+  roleIds: string[];
   execute: (interaction: CommandInteraction<CacheType>) => Promise<void>;
 }
