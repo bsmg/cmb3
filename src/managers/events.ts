@@ -8,7 +8,7 @@ export class EventManager {
   private static _instance: EventManager;
   private readonly _eventsPath = path.join(__dirname, "..", "events");
 
-  public registerEvent<Event extends keyof ClientEvents>(
+  private registerEvent<Event extends keyof ClientEvents>(
     eventName: Event,
     listener: (...args: ClientEvents[Event]) => void,
   ) {
@@ -20,7 +20,7 @@ export class EventManager {
     return this._instance;
   }
 
-  public async setupEventsAsync() {
+  public async setupEvents() {
     let eventFiles = await fs.readdir(this._eventsPath, {
       withFileTypes: true,
     });
