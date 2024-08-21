@@ -1,12 +1,11 @@
+import * as process from "node:process";
 import type {
   CacheType,
   CommandInteraction,
   CommandInteractionOptionResolver,
-  GuildMember,
 } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { Constants } from "../constants";
-import { resolveAnyRole } from "../helpers/resolveAnyRole";
 import type { ICommand } from "../interfaces/command";
 
 export default class Pick implements ICommand {
@@ -21,10 +20,12 @@ export default class Pick implements ICommand {
     )
     .setDMPermission(true);
 
-  public async execute(interaction: CommandInteraction<CacheType>) {
-    if (!resolveAnyRole(interaction.member as GuildMember, Constants.allRoles))
-      return;
+  public readonly roleIds = [
+    ...Constants.allRoles,
+    process.env.TestRoleId as string,
+  ];
 
+  public async execute(interaction: CommandInteraction<CacheType>) {
     const optionsStr = (
       interaction.options as CommandInteractionOptionResolver
     ).getString("options");

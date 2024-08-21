@@ -1,13 +1,18 @@
-import { Configuration } from "./configuration";
+import * as process from "node:process";
+import * as dotenv from "dotenv";
 import { ClientManager } from "./managers/client";
 import { CommandManager } from "./managers/commands";
 import { EventManager } from "./managers/events";
+import { FilterManager } from "./managers/filters";
+import { PostgresManager } from "./managers/postgres";
 
 (async () => {
-  await Configuration.setup(); // must run first to load config, spent a good 30 mins trying to figure out why nothing worked :/
+  dotenv.config();
 
-  await EventManager.instance.setupEventsAsync();
-  await CommandManager.instance.loadCommandsAsync();
+  await PostgresManager.instance.setup();
+  await EventManager.instance.setupEvents();
+  await CommandManager.instance.loadCommands();
+  await FilterManager.instance.setupFilters();
 
-  await ClientManager.instance.client.login(Configuration.instance.token);
+  await ClientManager.instance.client.login(process.env.Token);
 })();

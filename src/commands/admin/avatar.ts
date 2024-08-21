@@ -1,13 +1,11 @@
+import * as process from "node:process";
 import type {
   CacheType,
   CommandInteraction,
   CommandInteractionOptionResolver,
-  GuildMember,
 } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
-import { Configuration } from "../../configuration";
 import { Constants } from "../../constants";
-import { resolveAnyRole } from "../../helpers/resolveAnyRole";
 import type { ICommand } from "../../interfaces/command";
 import { ClientManager } from "../../managers/client";
 
@@ -23,17 +21,9 @@ export default class Avatar implements ICommand {
     )
     .setDMPermission(true);
 
-  public async execute(interaction: CommandInteraction<CacheType>) {
-    if (
-      !resolveAnyRole(interaction.member as GuildMember, [Constants.adminId, Configuration.instance.testId])
-    ) {
-      await interaction.reply({
-        content: "You don't have permission to use this command!",
-        ephemeral: true,
-      });
-      return;
-    }
+  public readonly roleIds = [Constants.adminId, process.env.TestRoleId as string];
 
+  public async execute(interaction: CommandInteraction<CacheType>) {
     const options = interaction.options as CommandInteractionOptionResolver;
     const image = options.getAttachment("image");
 

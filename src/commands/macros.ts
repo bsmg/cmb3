@@ -1,7 +1,7 @@
-import type { CacheType, CommandInteraction, GuildMember } from "discord.js";
+import * as process from "node:process";
+import type { CacheType, CommandInteraction } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { Constants } from "../constants";
-import { resolveAnyRole } from "../helpers/resolveAnyRole";
 import type { ICommand } from "../interfaces/command";
 
 export default class Macros implements ICommand {
@@ -9,20 +9,12 @@ export default class Macros implements ICommand {
     .setName("macros")
     .setDescription("Returns the macros page url");
 
-  public async execute(interaction: CommandInteraction<CacheType>) {
-    if (
-      !resolveAnyRole(interaction.member as GuildMember, [
-        ...Constants.allRoles,
-        Constants.testId,
-      ])
-    ) {
-      await interaction.reply({
-        content: "You don't have permission to use this command!",
-        ephemeral: true,
-      });
-      return;
-    }
+  public readonly roleIds = [
+    ...Constants.allRoles,
+    process.env.TestRoleId as string,
+  ];
 
+  public async execute(interaction: CommandInteraction<CacheType>) {
     await interaction.reply({
       content: "All macros can be found at: https://macros.bsmg.dev",
       ephemeral: true,
