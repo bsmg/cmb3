@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres
+    container_name: CMA3TestDb
+    environment:
+      POSTGRES_PASSWORD: ${DBPassword}
+      POSTGRES_USER: ${DBUser}
+      POSTGRES_DB: ${Database}
+  app:
+    image: channelmonitorapp
+    container_name: CMA3TestApp
+    environment:
+      Token: ${Token}
+      ClientId: ${ClientId}
+      TestRoleId: ${TestRoleId}
+      DBHost: ${DBHost}
+      DBPort: ${DBPort}
+      DBUser: ${DBUser}
+      DBPassword: ${DBPassword}
+      Database: ${Database}
