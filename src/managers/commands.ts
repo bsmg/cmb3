@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import * as process from "node:process";
 import { Collection, REST, Routes } from "discord.js";
-import { Configuration } from "../configuration";
 import type { ICommand } from "../interfaces/command";
 
 export class CommandManager {
@@ -26,28 +26,29 @@ export class CommandManager {
     return this._commands.get(commandName);
   }
 
-  public async loadCommandsAsync() {
+  public async loadCommands() {
     this._commands.clear();
 
     let files = await fs.readdir(this._commandsPath, {
       withFileTypes: true,
     });
 
-    const directoryPromises = files.filter(x => x.isDirectory()).map(async (dir) => {
-      const dirFiles = await fs.readdir(path.join(this._commandsPath, dir.name), { 
-        withFileTypes: true
+    const directoryPromises = files
+      .filter((x) => x.isDirectory())
+      .map(async (dir) => {
+        const dirFiles = await fs.readdir(
+          path.join(this._commandsPath, dir.name),
+          {
+            withFileTypes: true,
+          },
+        );
+
+        files.push(...dirFiles);
       });
-
-      console.log(dir.parentPath);
-
-      files.push(...dirFiles);
-    });
 
     await Promise.all(directoryPromises);
 
-    files = files.filter(x => x.isFile() && x.name.endsWith(".ts"));
-
-
+    files = files.filter((x) => x.isFile() && x.name.endsWith(".ts"));
 
     const commandPromises = files.map(async (file) => {
       const module = await import(path.join(file.parentPath, file.name));
@@ -66,11 +67,10 @@ export class CommandManager {
   private async refreshCommandsAsync() {
     console.log("Refreshing all commands!");
 
-    const rest = new REST().setToken(Configuration.instance.token);
-    await rest.put(
-      Routes.applicationCommands(Configuration.instance.clientId),
-      { body: this._commands.map((x) => x.builder.toJSON()) },
-    );
+    const rest = new REST().setToken(process.env.Token as string);
+    await rest.put(Routes.applicationCommands(process.env.ClientId as string), {
+      body: this._commands.map((x) => x.builder.toJSON()),
+    });
 
     console.log("Refreshed all commands");
   }
