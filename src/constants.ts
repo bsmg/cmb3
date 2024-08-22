@@ -7,7 +7,13 @@ export class Constants {
   public static readonly mapperSupportId = "687388571815903238";
   public static readonly macrosId = "465769822802673675";
 
-  public static readonly testId = "1231993971568541747";
+  public static guildInvite(code: string) {
+    return `https://discord.com/api/invites/${code}?with_counts=true&with_expiration=true`;
+  }
+
+  public static guildIcon(id: string, icon: string) {
+    return `https://cdn.discordapp.com/icons/${id}/${icon}.webp?size=64`;
+  }
 
   public static readonly allRoles = [
     this.adminId,
