@@ -21,7 +21,10 @@ export default class Avatar implements ICommand {
     )
     .setDMPermission(true);
 
-  public readonly roleIds = [Constants.adminId, process.env.TestRoleId as string];
+  public readonly roleIds = [
+    Constants.adminId,
+    process.env.TestRoleId as string,
+  ];
 
   public async execute(interaction: CommandInteraction<CacheType>) {
     const options = interaction.options as CommandInteractionOptionResolver;
