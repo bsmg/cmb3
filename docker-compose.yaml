@@ -1,20 +1,40 @@
 services:
-  db:
-    image: postgres
-    container_name: CMA3TestDb
-    environment:
-      POSTGRES_PASSWORD: ${DBPassword}
-      POSTGRES_USER: ${DBUser}
-      POSTGRES_DB: ${Database}
   app:
     image: channelmonitorapp
-    container_name: CMA3TestApp
+    container_name: CMA3App
+    depends_on:
+      db:
+        condition: service_healthy # Wait for postgres to be ready before starting
     environment:
       Token: ${Token}
       ClientId: ${ClientId}
       TestRoleId: ${TestRoleId}
-      DBHost: ${DBHost}
-      DBPort: ${DBPort}
+      Debug: ${Debug}
       DBUser: ${DBUser}
       DBPassword: ${DBPassword}
       Database: ${Database}
+      DATABASE_URL: "postgresql://${DBUser}:${DBPassword}@db:5432/${Database}?schema=public"
+    networks:
+      - CMANetwork
+
+  db:
+    image: postgres
+    container_name: CMA3Db
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+    environment:
+      POSTGRES_PASSWORD: ${DBPassword}
+      POSTGRES_USER: ${DBUser}
+      POSTGRES_DB: ${Database}
+    ports:
+      - "5432:5432"
+    networks:
+      - CMANetwork
+
+networks:
+  CMANetwork:
+    driver: bridge
