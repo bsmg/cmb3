@@ -1,4 +1,3 @@
-import * as process from "node:process";
 import type {
   CacheType,
   CommandInteraction,
@@ -21,10 +20,7 @@ export default class Avatar implements ICommand {
     )
     .setDMPermission(true);
 
-  public readonly roleIds = [
-    Constants.adminId,
-    process.env.TestRoleId as string,
-  ];
+  public readonly roleIds = [Constants.adminId];
 
   public async execute(interaction: CommandInteraction<CacheType>) {
     const options = interaction.options as CommandInteractionOptionResolver;
@@ -40,7 +36,7 @@ export default class Avatar implements ICommand {
 
     await interaction.deferReply({ ephemeral: false });
 
-    await ClientManager.instance.client.user?.setAvatar(image.url);
+    await ClientManager.client.user?.setAvatar(image.url);
     await interaction.followUp({ content: "Set avatar!", ephemeral: false });
   }
 }

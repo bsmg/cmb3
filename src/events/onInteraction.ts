@@ -1,3 +1,4 @@
+import * as process from "node:process";
 import type { CacheType, GuildMember, Interaction } from "discord.js";
 import { Events } from "discord.js";
 import type { IEvent } from "../interfaces/event";
@@ -14,6 +15,11 @@ export default class OnInteraction implements IEvent<Events.InteractionCreate> {
       throw new Error("Command not found for: " + interaction.commandName);
 
     const member = interaction.member as GuildMember;
+    const roles = command.roleIds;
+
+    if (process.env.Debug === "true")
+      roles.push(process.env.TestRoleId as string);
+
     await (member.roles.cache.hasAny(...command.roleIds)
       ? command.execute(interaction)
       : interaction.reply({

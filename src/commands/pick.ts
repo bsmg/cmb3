@@ -1,4 +1,3 @@
-import * as process from "node:process";
 import type {
   CacheType,
   CommandInteraction,
@@ -20,10 +19,7 @@ export default class Pick implements ICommand {
     )
     .setDMPermission(true);
 
-  public readonly roleIds = [
-    ...Constants.allRoles,
-    process.env.TestRoleId as string,
-  ];
+  public readonly roleIds = [...Constants.allRoles];
 
   public async execute(interaction: CommandInteraction<CacheType>) {
     const optionsStr = (
