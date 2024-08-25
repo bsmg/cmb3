@@ -25,12 +25,12 @@ export class ClientManager {
     });
   }
 
-  public static get instance() {
+  private static get instance() {
     if (!this._instance) this._instance = new ClientManager();
     return this._instance;
   }
 
-  public get client() {
-    return this._client;
+  public static get client() {
+    return this.instance._client;
   }
 }

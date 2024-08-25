@@ -12,7 +12,7 @@ export class EventManager {
     eventName: Event,
     listener: (...args: ClientEvents[Event]) => void,
   ) {
-    ClientManager.instance.client.on(eventName, listener);
+    ClientManager.client.on(eventName, listener);
   }
 
   public static get instance() {
