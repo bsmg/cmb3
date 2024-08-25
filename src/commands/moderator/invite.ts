@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import * as process from "node:process";
 import { EmbedBuilder } from "@discordjs/builders";
 import type {
   CacheType,
@@ -9,22 +8,44 @@ import type {
 import { SlashCommandBuilder } from "discord.js";
 import { Constants } from "../../constants";
 import type { ICommand } from "../../interfaces/command";
-// import { PostgresManager } from "../../managers/postgres";
+import { PrismaManager } from "../../managers/prisma";
 
 export default class Invite implements ICommand {
   public readonly builder = new SlashCommandBuilder()
     .setName("invite")
     .setDescription("Interact with the invite filter.")
     .setDMPermission(false)
-    .addSubcommand((subcommand) =>
-      subcommand
+    .addSubcommandGroup((subcommandGroup) =>
+      subcommandGroup
         .setName("add")
-        .setDescription("Add a guild id to the whitelist.")
-        .addStringOption((option) =>
-          option
+        .setDescription("Add a guild to the whitelist.")
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("code")
+            .setDescription(
+              "Add guild from invite code, returns simple information about the guild.",
+            )
+            .addStringOption((option) =>
+              option
+                .setName("content")
+                .setDescription(
+                  "The guild invite code to be added to the whitelist.",
+                )
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
             .setName("id")
-            .setDescription("The guild id to be added to the whitelist.")
-            .setRequired(true),
+            .setDescription(
+              "Add guild from invite code, unable to return guild information.",
+            )
+            .addStringOption((option) =>
+              option
+                .setName("content")
+                .setDescription("The guild id to be added to the whitelist.")
+                .setRequired(true),
+            ),
         ),
     )
     .addSubcommand((subcommand) =>
@@ -33,97 +54,201 @@ export default class Invite implements ICommand {
         .setDescription("Remove a guild id from the whitelist.")
         .addStringOption((option) =>
           option
-            .setName("id")
+            .setName("content")
             .setDescription("The guild id to be removed from the whitelist.")
-            .setRequired(true),
-        ),
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName("get")
-        .setDescription("Gets a guild's id from an invite url")
-        .addStringOption((option) =>
-          option
-            .setName("code")
-            .setDescription("The guild invite code to get the id from.")
             .setRequired(true),
         ),
     );
 
-  public readonly roleIds = [
-    Constants.adminId,
-    Constants.moderatorId,
-    process.env.TestRoleId as string,
-  ];
+  public readonly roleIds = [Constants.adminId, Constants.moderatorId];
 
   public async execute(interaction: CommandInteraction<CacheType>) {
     const options = interaction.options as CommandInteractionOptionResolver;
+    const subcommand = options.getSubcommand();
+    const content = options.getString("content") as string;
 
-    switch (options.getSubcommand()) {
-      case "get":
-        await this.handleGetInvite(interaction, options);
-        break;
-      // id ? interaction.reply(`Guild found!`)
-    }
-  }
+    if (subcommand === "remove") {
+      const guild = await PrismaManager.client.guildWhitelist.delete({
+        where: {
+          id: content,
+        },
+      });
 
-  private async handleGetInvite(
-    interaction: CommandInteraction<CacheType>,
-    options: CommandInteractionOptionResolver,
-  ) {
-    const code = options.getString("code") as string;
-    const guildInfo = await this.getGuildFromCode(code);
-
-    if (!guildInfo.guild) {
       await interaction.reply({
-        content: `Failed to get guild info for \`${code}\``,
-        ephemeral: true,
+        content: "Deleted guild from whitelist.",
+        embeds: [
+          this.createGuildEmbed(
+            guild.name,
+            guild.id,
+            guild.description,
+            guild.expiryTime,
+            guild.code,
+            guild.icon,
+          ),
+        ],
       });
 
       return;
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle(`Invite Found: ${guildInfo.guild.name}`)
-      .setColor(0x00ff00)
-      .addFields(
-        {
-          name: "Invite",
-          value: `https://discord.gg/${code}`,
-          inline: false
-        },
-        {
-          name: "Expires",
-          value: guildInfo.expires_at ? `<t:${Date.parse(guildInfo.expires_at) / 1_000}>` : "Never",
-          inline: false
-        },
-        { 
-          name: "ID", 
-          value: guildInfo.guild.id, 
-          inline: false 
-        },
-        {
-          name: "Description",
-          value: guildInfo.guild.description ?? "No description",
-          inline: false,
-        },
-        {
-          name: "Members",
-          value: Number(guildInfo.approximate_member_count).toLocaleString(),
-          inline: false
-        }
-      )
-      .setThumbnail(
-        Constants.guildIcon(guildInfo.guild_id, guildInfo.guild.icon),
-      );
+    if (subcommand === "code") {
+      const guildInfo = await this.getGuildFromCode(content);
 
-    await interaction.reply({
-      embeds: [embed],
-    });
+      if (!guildInfo) {
+        await interaction.reply({
+          content: `Unable to get guild information from code: \`${content}\``,
+          ephemeral: true,
+        });
+
+        return;
+      }
+
+      const existingGuild =
+        await PrismaManager.client.guildWhitelist.findUnique({
+          where: {
+            id: guildInfo.id,
+          },
+        });
+
+      if (existingGuild) {
+        await interaction.reply({
+          content: `Existing guild found for id: \`${guildInfo.id}\``,
+          embeds: [
+            this.createGuildEmbed(
+              existingGuild.name,
+              existingGuild.id,
+              existingGuild.description,
+              existingGuild.expiryTime,
+              existingGuild.code,
+              existingGuild.icon,
+            ),
+          ],
+          ephemeral: true,
+        });
+
+        return;
+      }
+
+      const guild = await PrismaManager.client.guildWhitelist.create({
+        data: {
+          id: guildInfo.id,
+          name: guildInfo.name,
+          description: guildInfo.description,
+          expiryTime: guildInfo.expiresAt,
+          icon: guildInfo.icon,
+          code: content,
+        },
+      });
+
+      await interaction.reply({
+        content: `Added guild to whitelist using code \`${content}\``,
+        embeds: [
+          this.createGuildEmbed(
+            guild.name,
+            guild.id,
+            guild.description,
+            guild.expiryTime,
+            guild.code,
+            guild.icon,
+          ),
+        ],
+      });
+
+      return;
+    }
+
+    if (subcommand === "id") {
+      const existingGuild =
+        await PrismaManager.client.guildWhitelist.findUnique({
+          where: {
+            id: content,
+          },
+        });
+
+      if (existingGuild) {
+        await interaction.reply({
+          content: `Existing guild found for id \`${content}\``,
+          embeds: [
+            this.createGuildEmbed(
+              existingGuild.name,
+              content,
+              existingGuild.description,
+              existingGuild.expiryTime,
+              existingGuild.code,
+              existingGuild.icon,
+            ),
+          ],
+          ephemeral: true,
+        });
+
+        return;
+      }
+
+      await PrismaManager.client.guildWhitelist.create({
+        data: {
+          id: content,
+        },
+      });
+
+      await interaction.reply({
+        content: `Added guild to whitelist using id \`${content}\``,
+        embeds: [this.createGuildEmbed(null, content, null, null, null, null)],
+      });
+    }
   }
 
   private async getGuildFromCode(code: string) {
-    const inviteData = await fetch(Constants.guildInvite(code));
-    return JSON.parse(await inviteData.text());
+    const inviteData = await fetch(Constants.guildInvite(code)).catch(
+      () => null,
+    );
+    const inviteText = await inviteData?.text();
+
+    if (!inviteText) return;
+
+    const inviteJson = JSON.parse(inviteText);
+
+    return {
+      id: inviteJson.guild_id as string,
+      name: inviteJson.guild.name as string,
+      description: (inviteJson.guild.description as string) ?? "No description",
+      icon: inviteJson.guild.icon as string,
+      currentMembers: inviteJson.approximate_member_count as number,
+      expiresAt: inviteJson.expires_at as string,
+    };
+  }
+
+  private createGuildEmbed(
+    name: string | null,
+    id: string,
+    description: string | null,
+    expiresAt: string | null,
+    code: string | null,
+    icon: string | null,
+  ) {
+    return new EmbedBuilder()
+      .setTitle(name ?? "No Name Found")
+      .setColor(0x00ff00)
+      .setThumbnail(icon ? Constants.guildIcon(id, icon) : null)
+      .addFields(
+        {
+          name: "ID",
+          value: "`" + id + "`",
+          inline: false,
+        },
+        {
+          name: "Description",
+          value: description ?? "No description",
+          inline: false,
+        },
+        {
+          name: "Expires",
+          value: expiresAt ? `<t:${Date.parse(expiresAt) / 1_000}>` : "Never",
+          inline: false,
+        },
+        {
+          name: "Invite",
+          value: code ? `https://discord.gg/${code}` : "No code",
+        },
+      );
   }
 }
