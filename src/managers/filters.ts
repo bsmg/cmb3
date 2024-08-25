@@ -34,7 +34,8 @@ export class FilterManager {
     files = files.filter((x) => x.isFile() && x.name.endsWith(".ts"));
 
     const filePromises = files.map(async (file) => {
-      const module = await import(path.join(file.parentPath, file.name));
+      // Switched to file.path over file.parentPath temporarily. .parentPath appears to be null on linux.
+      const module = await import(path.join(file.path, file.name));
 
       if (module.default) {
         const instance = new module.default() as IFilter;

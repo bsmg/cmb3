@@ -18,7 +18,7 @@ export class CommandManager {
   }
 
   private registerCommand(command: ICommand) {
-    console.log(`Registering ${command.builder.name}`);
+    console.log(`Registering command "${command.builder.name}"`);
     this._commands.set(command.builder.name, command);
   }
 
@@ -51,7 +51,9 @@ export class CommandManager {
     files = files.filter((x) => x.isFile() && x.name.endsWith(".ts"));
 
     const commandPromises = files.map(async (file) => {
-      const module = await import(path.join(file.parentPath, file.name));
+      // Switched to file.path over file.parentPath temporarily. .parentPath appears to be null on linux.
+      const filePath = path.join(file.path, file.name);
+      const module = await import(filePath);
 
       if (module.default) {
         const instance = new module.default() as ICommand;
@@ -65,13 +67,13 @@ export class CommandManager {
   }
 
   private async refreshCommandsAsync() {
-    console.log("Refreshing all commands!");
+    console.log("Reloading application commands...");
 
     const rest = new REST().setToken(process.env.Token as string);
     await rest.put(Routes.applicationCommands(process.env.ClientId as string), {
       body: this._commands.map((x) => x.builder.toJSON()),
     });
 
-    console.log("Refreshed all commands");
+    console.log("Reloaded all application commands.");
   }
 }
