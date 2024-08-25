@@ -1,15 +1,18 @@
 #!/bin/sh
 
-CONTAINER_ALREADY_STARTED="/cma/Container.init"
+ContainerSetup="/cma/Container.init"
 
-if [ ! -e "$CONTAINER_ALREADY_STARTED" ];
+if [ ! -e "$ContainerSetup" ];
 then
-    touch "$CONTAINER_ALREADY_STARTED"
+    touch "$ContainerSetup"
     echo "-- First Startup --"
     npm run prisma:init
-    npx prisma generate
+    npm run prisma:gen
+    sleep 1
     npm run start
 else
     echo "-- Not First Startup --"
+    npm run prisma:gen
+    sleep 1
     npm run start
 fi
