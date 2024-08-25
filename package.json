@@ -5,6 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "prisma:init": "prisma migrate dev --name init",
+    "prisma:gen": "prisma generate",
     "lint": "prettier --check . && eslint src --ext ts",
     "format": "prettier --write . && eslint src --ext ts --fix",
     "fmt": "npm run format",
@@ -24,16 +26,16 @@
   "homepage": "https://github.com/bsmg/cmb3#readme",
   "devDependencies": {
     "@luludev/eslint-config": "^0.5.4",
-    "@types/pg": "^8.11.6",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
+    "prisma": "^5.18.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
     "@discordjs/builders": "^1.8.2",
+    "@prisma/client": "^5.18.0",
     "discord.js": "^14.15.3",
-    "dotenv": "^16.4.5",
-    "pg": "^8.12.0"
+    "dotenv": "^16.4.5"
   }
 }
