@@ -1,6 +1,6 @@
-import * as process from "node:process";
 import type { CacheType, GuildMember, Interaction } from "discord.js";
 import { Events } from "discord.js";
+import { memberHasAnyRole } from "../helpers/roles";
 import type { IEvent } from "../interfaces/event";
 import { CommandManager } from "../managers/commands";
 
@@ -17,14 +17,16 @@ export default class OnInteraction implements IEvent<Events.InteractionCreate> {
     const member = interaction.member as GuildMember;
     const roles = command.roleIds;
 
-    if (process.env.Debug === "true")
-      roles.push(process.env.TestRoleId as string);
+    const memberHasRole = memberHasAnyRole(member, roles);
 
-    await (member.roles.cache.hasAny(...command.roleIds)
-      ? command.execute(interaction)
-      : interaction.reply({
-          content: "You don't have permission to use this command!",
-          ephemeral: true,
-        }));
+    if (memberHasRole) {
+      await command.execute(interaction);
+      return;
+    }
+
+    await interaction.reply({
+      content: "You don't have permission to use this command!",
+      ephemeral: true,
+    });
   }
 }
