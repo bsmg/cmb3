@@ -34,7 +34,7 @@ export default class Avatar implements ICommand {
       return;
     }
 
-    await interaction.deferReply({ ephemeral: false });
+    await interaction.deferReply();
 
     await ClientManager.client.user?.setAvatar(image.url);
     await interaction.followUp({ content: "Set avatar!", ephemeral: false });
