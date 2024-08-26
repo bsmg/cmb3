@@ -7,6 +7,7 @@ import type {
 } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { Constants } from "../../constants";
+import { getGuildFromCode } from "../../helpers/invite";
 import type { ICommand } from "../../interfaces/command";
 import { PrismaManager } from "../../managers/prisma";
 
@@ -92,7 +93,7 @@ export default class Invite implements ICommand {
     }
 
     if (subcommand === "code") {
-      const guildInfo = await this.getGuildFromCode(content);
+      const guildInfo = await getGuildFromCode(content);
 
       if (!guildInfo) {
         await interaction.reply({
@@ -195,26 +196,6 @@ export default class Invite implements ICommand {
         embeds: [this.createGuildEmbed(null, content, null, null, null, null)],
       });
     }
-  }
-
-  private async getGuildFromCode(code: string) {
-    const inviteData = await fetch(Constants.guildInvite(code)).catch(
-      () => null,
-    );
-    const inviteText = await inviteData?.text();
-
-    if (!inviteText) return;
-
-    const inviteJson = JSON.parse(inviteText);
-
-    return {
-      id: inviteJson.guild_id as string,
-      name: inviteJson.guild.name as string,
-      description: (inviteJson.guild.description as string) ?? "No description",
-      icon: inviteJson.guild.icon as string,
-      currentMembers: inviteJson.approximate_member_count as number,
-      expiresAt: inviteJson.expires_at as string,
-    };
   }
 
   private createGuildEmbed(
