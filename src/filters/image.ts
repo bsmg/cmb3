@@ -1,9 +1,18 @@
-import type { Message } from "discord.js";
+import type { GuildMember, Message } from "discord.js";
+import { Constants } from "../constants";
+import { memberHasAnyRole } from "../helpers/roles";
 import type { IFilter } from "../interfaces/filter";
 
 export default class ImageFilter implements IFilter {
   public priority = 10;
   public name = "ImageFilter";
 
-  public async execute(_message: Message<boolean>) {}
+  public async execute(message: Message<boolean>) {
+    const memberHasRole = memberHasAnyRole(message.member as GuildMember, [
+      Constants.adminId,
+      Constants.staffId,
+    ]);
+    // eslint-disable-next-line no-useless-return
+    if (memberHasRole) return;
+  }
 }
